@@ -1,0 +1,62 @@
+# =========================
+# Python
+# =========================
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.log
+
+# =========================
+# Virtual Environments
+# =========================
+venv/
+.venv/
+env/
+ENV/
+
+# =========================
+# Environment Variables
+# =========================
+.env
+.env.*
+
+# =========================
+# OS / Editor files
+# =========================
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# =========================
+# Database / Vector Stores
+# =========================
+chroma_db/
+*.sqlite
+*.db
+
+# =========================
+# Temporary / Generated files
+# =========================
+*.tmp
+*.cache
+*.out
+*.pid
+
+# =========================
+# Frontend build artifacts (if any)
+# =========================
+node_modules/
+dist/
+build/
+
+# =========================
+# Jupyter / Experiments
+# =========================
+.ipynb_checkpoints/
+
+# =========================
+# Test / Debug files
+# =========================
+test.txt

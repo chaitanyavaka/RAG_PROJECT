@@ -1,0 +1,12 @@
+fastapi
+uvicorn
+python-multipart
+chromadb
+sentence-transformers
+groq
+pypdf
+python-docx
+python-pptx
+pandas
+python-dotenv
+websockets
