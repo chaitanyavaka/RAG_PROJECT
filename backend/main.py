@@ -1,4 +1,5 @@
 import os
+import uvicorn
 import shutil
 import tempfile
 from fastapi import FastAPI, UploadFile, File, HTTPException
@@ -93,8 +94,14 @@ async def chat(request: ChatRequest):
     if "error" in result:
         raise HTTPException(status_code=500, detail=result["error"])
         
+
     return ChatResponse(
         answer=result.get("answer", ""),
         context=result.get("context", ""),
         trace_id=result.get("trace_id", "")
     )
+
+if __name__ == "__main__":
+    port = int(os.environ.get("PORT", 10000))
+    print(f"Starting server on port {port}...")
+    uvicorn.run("backend.main:app", host="0.0.0.0", port=port, reload=False)
