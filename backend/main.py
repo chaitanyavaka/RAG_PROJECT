@@ -9,16 +9,20 @@ from pydantic import BaseModel
 from contextlib import asynccontextmanager
 
 # Clean up old DB on restart
+# Clean up old DB on restart
 db_path = "./chroma_db"
+print(f"Checking database at {db_path}...", flush=True)
 if os.path.exists(db_path):
     try:
         shutil.rmtree(db_path)
-        print(f"Deleted old database at {db_path}")
+        print(f"Deleted old database at {db_path}", flush=True)
     except Exception as e:
-        print(f"Warning: Could not delete old database: {e}")
+        print(f"Warning: Could not delete old database: {e}", flush=True)
 
+print("Importing agents...", flush=True)
 from .agents.coordinator import coordinator
 from .mcp.broker import broker
+print("Agents imported.", flush=True)
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -28,8 +32,13 @@ async def lifespan(app: FastAPI):
     # Shutdown
     print("Shutting down...")
 
+import sys
+
+print("Loading backend.main...", flush=True)
+
 from fastapi.staticfiles import StaticFiles
 
+print("Initializing FastAPI App...", flush=True)
 app = FastAPI(title="Agentic RAG Chatbot", lifespan=lifespan)
 
 # CORS
@@ -48,7 +57,12 @@ app.add_middleware(
 # Let's Serve static files on root, but exclude API specific paths effectively by order.
 # Actually, better to serve "/" as FileResponse('frontend/index.html') and mount /static for assets.
 # But for simplicity, let's mount / to StaticFiles with html=True
-app.mount("/static", StaticFiles(directory="frontend"), name="static")
+# But for simplicity, let's mount / to StaticFiles with html=True
+if os.path.exists("frontend"):
+    print("Mounting frontend directory...", flush=True)
+    app.mount("/static", StaticFiles(directory="frontend"), name="static")
+else:
+    print("WARNING: 'frontend' directory not found. Static files will not be served.", flush=True)
 
 @app.get("/")
 async def root():
