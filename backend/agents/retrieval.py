@@ -1,5 +1,5 @@
-import chromadb
-from chromadb.utils import embedding_functions
+# import chromadb # Moved to lazy init
+# from chromadb.utils import embedding_functions # Moved to lazy init
 from .base import BaseAgent
 from ..mcp.protocol import MCPMessage, MessageType
 import uuid
@@ -7,12 +7,26 @@ import uuid
 class RetrievalAgent(BaseAgent):
     def __init__(self):
         super().__init__("RetrievalAgent")
-        self.client = chromadb.PersistentClient(path="./chroma_db")
-        # Use a simple default embedding function (all-MiniLM-L6-v2 is standard)
-        self.ef = embedding_functions.SentenceTransformerEmbeddingFunction(model_name="all-MiniLM-L6-v2")
-        self.collection = self.client.get_or_create_collection(name="rag_docs", embedding_function=self.ef)
+        self.client = None
+        self.ef = None
+        self.collection = None
+
+    def _lazy_init(self):
+        if self.client is None:
+            print("[RetrievalAgent] Lazy initializing ChromaDB and Embeddings...")
+            import chromadb
+            from chromadb.utils import embedding_functions
+            
+            self.client = chromadb.PersistentClient(path="./chroma_db")
+            # Use a simple default embedding function (all-MiniLM-L6-v2 is standard)
+            self.ef = embedding_functions.SentenceTransformerEmbeddingFunction(model_name="all-MiniLM-L6-v2")
+            self.collection = self.client.get_or_create_collection(name="rag_docs", embedding_function=self.ef)
+            print("[RetrievalAgent] Initialization complete.")
 
     async def process_message(self, message: MCPMessage):
+        # Ensure initialized
+        self._lazy_init()
+        
         if message.type == MessageType.TASK_REQUEST:
             task = message.payload.get("task")
             if task == "embed_chunks":
